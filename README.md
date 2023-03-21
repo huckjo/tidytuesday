@@ -1,2 +1,2 @@
 # tidytuesday
-Contributions for the #tidytuesday project
+Contributions for the [#TidyTuesday](https://github.com/rfordatascience/tidytuesday) project
