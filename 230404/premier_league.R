@@ -4,7 +4,7 @@
 ################################################################################
 
 library(pacman)
-p_load(ggbump, teamcolors, tidytuesdayR, tidyverse)
+p_load(ggbump, ggfx, teamcolors, tidytuesdayR, tidyverse)
 
 tt <- tt_load('2023-04-04')
 tt <- tt_load(2023, week = 14)
@@ -25,8 +25,8 @@ df <- soccer |>
 
 # use dates to assign matches to round 
 df <- df |> 
-  arrange(Date) |> 
   group_by(Club) |> 
+  arrange(Date) |> 
   mutate(Round = row_number()) |> 
   ungroup()
 
@@ -54,28 +54,50 @@ df <- df |>
     CumulativePoints = cumsum(Points),
     CumulativeGoalDiff = cumsum(GoalDiff)
   ) |> 
+  ungroup() 
+
+# rank clubs based on criteria 1-3
+initial_ranks <- df |> 
+  group_by(Round) |> 
+  mutate(
+    Rank1 = min_rank(CumulativePoints),
+    Rank2 = min_rank(CumulativeGoalDiff),
+    Rank3 = min_rank(CumulativeGoals)
+  ) |> 
+  # indicate whether club is tied each round
+  arrange(Round, desc(Rank1), desc(Rank2), desc(Rank3)) |> 
   ungroup()
 
-# calculate head-to-head points and goal difference
-# head_to_head <- df |> 
-#  group_by(Round, Club, Location) |>
-#  summarize(H2H_Points = sum(Points),
-#            H2H_GoalDiff = sum(GoalDiff)) 
+# create dataframe with match pairs
+matches <- df |> select(Date, Match, Club)
+matches <- matches |> 
+  inner_join(matches, by = c("Date", "Match"),
+             relationship = "many-to-many") |> 
+  filter(Club.x != Club.y) |> 
+  rename(Opponent = Club.y) |> 
+  select(Date, Match, Club = Club.x, Opponent) 
 
-# rank clubs based on the criteria
-ranking <- df |> 
-  #left_join(df_head_to_head, by = c("Week", "Team", "Location")) %>%
-  group_by(Round) |> 
-  arrange(
-    desc(CumulativePoints),
-    desc(CumulativeGoalDiff),
-    desc(CumulativeGoals)
-    #desc(HeadPoints),
-    #desc(HeadGoalDifference)
+# compute head-to-head criteria
+ranking <- initial_ranks |> 
+  inner_join(matches, by = c("Date", "Match", "Club")) %>%
+  group_by(Club, Opponent) |> 
+  arrange(Date) |> 
+  mutate(
+    HeadPoints = cumsum(Points),
+    AwayGoals = cumsum(FTAG)
   ) |> 
-  mutate(Rank = row_number()) |> 
   ungroup() |> 
-  select(Round, Club, Rank)
+  # final rankings
+  group_by(Round) |> 
+  arrange(Round) |> 
+  mutate(
+    Rank4 = min_rank(HeadPoints),
+    Rank5 = min_rank(AwayGoals)
+  ) |> 
+  arrange(
+    Round, desc(Rank1), desc(Rank2), desc(Rank3), desc(Rank4), desc(Rank5)
+    ) |> 
+  mutate(Rank6 = row_number())
 
 ################################################################################
 
@@ -93,8 +115,14 @@ club_palette <- league_pal("epl") |>
     Club == "Newcastle United" ~ "Newcastle",
     Club == "Tottenham Hotspur" ~ "Tottenham",
     Club == "West Ham United" ~ "West Ham",
-    .default = Club
-  )) |> 
+    .default = Club)
+  ) |> 
+  #mutate(Color = case_when(
+  #  # manually change dark to lighter color
+  #  Club == "Newcastle" ~ "#37B6F1",
+  #  Club == "Tottenham" ~ "#FFFFFF",
+  #  .default = Color
+  #)) |> 
   # manually add clubs with missing palette
   bind_rows(
     data.frame(
@@ -102,23 +130,16 @@ club_palette <- league_pal("epl") |>
       Color = c("#A5C6EA", "#E40C0B", "#FFFFFF", "#2D8D3D", "#FABA09")
     )
   ) |> 
-  # exclude clubs missing from 2021 season
-  filter(!Club %in% c(
-    "AFC Bournemouth",
-    "Huddersfield Town",
-    "Stoke City",
-    "Swansea City",
-    "West Bromwich Albion"
-  )) |> 
   deframe()
 
 # rank diagram
 ranking |> 
-  ggplot(aes(x = Round, y = Rank, group = Club, color = Club)) +
-  geom_bump(smooth = 10, size = 1.5, alpha = .8, lineend = "round") +
+  ggplot(aes(x = Round, y = Rank6, group = Club, color = Club)) +
+  geom_bump(smooth = 10, size = 1.5, alpha = .9, lineend = "round") +
   geom_text(
     data = ranking |> 
-      filter(Round == 38), aes(label = Club), size = 3.5, hjust = -0.1
+      filter(Round == 38), aes(label = Club, fontface = "bold"), 
+    size = 3.5, hjust = -0.1
     ) +
   scale_color_manual(values=club_palette) +
   scale_x_continuous(limits = c(0, 52)) +
@@ -127,24 +148,23 @@ ranking |>
        title = "Premier League Rankings",
        subtitle = "Manchester City quickly climbed the ranks while Liverpool and \nChelsea maintained top positions during the 2021-22 season",
        caption = "Source: English Premier League | github.com/huckjo") +
-  theme_bw() +
   theme(
-    plot.title = element_text(face = "bold", size = 18, color = "#1F1F1F"),
-    plot.subtitle = element_text(size = 12, color = "#1F1F1F"),
+    plot.title = element_text(face = "bold", size = 18, color = "#3d3d3d"),
+    plot.subtitle = element_text(size = 12, color = "#3d3d3d"),
     plot.title.position = "plot",
     plot.caption.position = "plot",
-    plot.caption = element_text(size = 8, color = "#1F1F1F"),
-    plot.background = element_rect(fill = "#ADADAD"),
-    panel.background = element_rect(fill = "#ADADAD"),
+    plot.caption = element_text(size = 8, color = "#3d3d3d"),
+    plot.background = element_rect(fill = "#ebebeb", color = "#ebebeb"),
+    panel.background = element_rect(fill = "#ebebeb"),
     panel.border = element_blank(),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
-    axis.text.y = element_text(size = 10, color = "#1F1F1F"),
-    axis.ticks.y =element_blank(),
+    axis.text.y = element_text(size = 10, color = "#3d3d3d"),
+    axis.ticks.y = element_blank(),
     axis.text.x = element_blank(),
-    axis.ticks.x =element_blank(),
-    legend.text = element_text(size = 12, color = "#1F1F1F"),
-    legend.title = element_text(size = 12, color = "#1F1F1F"),
+    axis.ticks.x = element_blank(),
+    legend.text = element_text(size = 12, color = "#3d3d3d"),
+    legend.title = element_text(size = 12, color = "#3d3d3d"),
     legend.position = "none",
     plot.margin = margin(.75, .75,.75, .75, "cm"),
     aspect.ratio = 0.75
