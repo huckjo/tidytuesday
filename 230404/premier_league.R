@@ -4,7 +4,7 @@
 ################################################################################
 
 library(pacman)
-p_load(ggbump, ggfx, teamcolors, tidytuesdayR, tidyverse)
+p_load(ggbump, ggnewscale, teamcolors, tidytuesdayR, tidyverse)
 
 tt <- tt_load('2023-04-04')
 tt <- tt_load(2023, week = 14)
@@ -117,12 +117,12 @@ club_palette <- league_pal("epl") |>
     Club == "West Ham United" ~ "West Ham",
     .default = Club)
   ) |> 
-  #mutate(Color = case_when(
-  #  # manually change dark to lighter color
-  #  Club == "Newcastle" ~ "#37B6F1",
-  #  Club == "Tottenham" ~ "#FFFFFF",
-  #  .default = Color
-  #)) |> 
+  mutate(Color = case_when(
+    # manually change dark to lighter color
+    Club == "Newcastle" ~ "#37B6F1",
+    Club == "Tottenham" ~ "#FFFFFF",
+    .default = Color
+  )) |> 
   # manually add clubs with missing palette
   bind_rows(
     data.frame(
@@ -132,42 +132,59 @@ club_palette <- league_pal("epl") |>
   ) |> 
   deframe()
 
+# assign palettes for text color and fill
+club_text <- club_palette |> 
+  enframe(name = "Club", value = "Color") |> 
+  mutate(Color = case_when(
+    # manually change darker to lighter color
+    Club %in% c("Aston Villa", "Burnley", "Leeds", 
+                "Man City", "Tottenham", "Watford") ~ "#000000",
+    .default = "#FFFFFF"
+  )) |> 
+  deframe()
+
 # rank diagram
-ranking |> 
-  ggplot(aes(x = Round, y = Rank6, group = Club, color = Club)) +
-  geom_bump(smooth = 10, size = 1.5, alpha = .9, lineend = "round") +
-  geom_text(
-    data = ranking |> 
-      filter(Round == 38), aes(label = Club, fontface = "bold"), 
-    size = 3.5, hjust = -0.1
-    ) +
+ranking |> ggplot() +
+  geom_bump(aes(x = Round, y = Rank6, group = Club, color = Club),
+            size = 1.5, alpha = 0.9, lineend = "round") +
   scale_color_manual(values=club_palette) +
-  scale_x_continuous(limits = c(0, 52)) +
+  
+  # create a new scale for labels
+  new_scale_color() +
+  geom_label(
+    data = ranking |> filter(Round == 38), 
+    aes(label = Club, x = Round, y = Rank6, 
+        color = Club, fill = Club, fontface = "bold"),
+    size = 3.5, hjust = -0.1, label.size = NA
+    ) +
+  scale_color_manual(values = club_text) +
+  scale_fill_manual(values = club_palette) +
+  scale_x_continuous(limits = c(0, 50)) +
   scale_y_reverse(breaks = 1:20) +
   labs(x = NULL, y = NULL, fill = NULL, color = NULL,
        title = "Premier League Rankings",
        subtitle = "Manchester City quickly climbed the ranks while Liverpool and \nChelsea maintained top positions during the 2021-22 season",
        caption = "Source: English Premier League | github.com/huckjo") +
   theme(
-    plot.title = element_text(face = "bold", size = 18, color = "#3d3d3d"),
-    plot.subtitle = element_text(size = 12, color = "#3d3d3d"),
+    plot.title = element_text(face = "bold", size = 20, color = "#FFFFFF"),
+    plot.subtitle = element_text(size = 14, color = "#FFFFFF"),
     plot.title.position = "plot",
     plot.caption.position = "plot",
-    plot.caption = element_text(size = 8, color = "#3d3d3d"),
-    plot.background = element_rect(fill = "#ebebeb", color = "#ebebeb"),
-    panel.background = element_rect(fill = "#ebebeb"),
+    plot.caption = element_text(size = 8, color = "#FFFFFF"),
+    plot.background = element_rect(fill = "#1f1f1f", color = "#1f1f1f"),
+    panel.background = element_rect(fill = "#1f1f1f"),
     panel.border = element_blank(),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
-    axis.text.y = element_text(size = 10, color = "#3d3d3d"),
+    axis.text.y = element_text(size = 10, color = "#FFFFFF"),
     axis.ticks.y = element_blank(),
     axis.text.x = element_blank(),
     axis.ticks.x = element_blank(),
-    legend.text = element_text(size = 12, color = "#3d3d3d"),
-    legend.title = element_text(size = 12, color = "#3d3d3d"),
+    legend.text = element_text(size = 12, color = "#FFFFFF"),
+    legend.title = element_text(size = 12, color = "#FFFFFF"),
     legend.position = "none",
-    plot.margin = margin(.75, .75,.75, .75, "cm"),
+    plot.margin = margin(.5, .5,.5, .5, "cm"),
     aspect.ratio = 0.75
   )
 
-ggsave("premier_league.png")
+ggsave("premier_league.png", dpi=320)
