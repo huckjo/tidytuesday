@@ -79,8 +79,10 @@ ranking <- df |>
 
 ################################################################################
 
+premier_palette <- c("#38003c", "#00ff85", "#e90052", "#04f5ff")
+
 # assign color palette
-epl_palette <- league_pal("epl") |> 
+club_palette <- league_pal("epl") |> 
   enframe(name = "Club", value = "Color") |> 
   # rename clubs to match data
   mutate(Club = case_when(
@@ -118,33 +120,33 @@ ranking |>
     data = ranking |> 
       filter(Round == 38), aes(label = Club), size = 3.5, hjust = -0.1
     ) +
-  #scale_color_manual(values=epl_palette) +
+  scale_color_manual(values=club_palette) +
   scale_x_continuous(limits = c(0, 52)) +
   scale_y_reverse(breaks = 1:20) +
   labs(x = NULL, y = NULL, fill = NULL, color = NULL,
        title = "Premier League Rankings",
-       subtitle = "Manchester City quickly climbed the ranks while Liverpool and \nChelsea maintained top positions during the 2021 season",
+       subtitle = "Manchester City quickly climbed the ranks while Liverpool and \nChelsea maintained top positions during the 2021-22 season",
        caption = "Source: English Premier League | github.com/huckjo") +
   theme_bw() +
   theme(
-    plot.title = element_text(face = "bold", size = 18, color = "#ECBBF2"),
-    plot.subtitle = element_text(size = 12, color = "#ECBBF2"),
+    plot.title = element_text(face = "bold", size = 18, color = "#1F1F1F"),
+    plot.subtitle = element_text(size = 12, color = "#1F1F1F"),
     plot.title.position = "plot",
     plot.caption.position = "plot",
-    plot.caption = element_text(size = 8, color = "#ECBBF2"),
-    plot.background = element_rect(fill = "#360C3B"),
-    panel.background = element_rect(fill = "#360C3B"),
+    plot.caption = element_text(size = 8, color = "#1F1F1F"),
+    plot.background = element_rect(fill = "#ADADAD"),
+    panel.background = element_rect(fill = "#ADADAD"),
     panel.border = element_blank(),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
-    axis.text.y = element_text(size = 10, color = "#ECBBF2"),
+    axis.text.y = element_text(size = 10, color = "#1F1F1F"),
     axis.ticks.y =element_blank(),
     axis.text.x = element_blank(),
     axis.ticks.x =element_blank(),
-    legend.text = element_text(size = 12, color = "#ECBBF2"),
-    legend.title = element_text(size = 12, color = "#ECBBF2"),
+    legend.text = element_text(size = 12, color = "#1F1F1F"),
+    legend.title = element_text(size = 12, color = "#1F1F1F"),
     legend.position = "none",
-    plot.margin = margin(.75, 1,.75, .75, "cm"),
+    plot.margin = margin(.75, .75,.75, .75, "cm"),
     aspect.ratio = 0.75
   )
 
