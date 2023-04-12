@@ -127,7 +127,7 @@ yoy <- annual_eggs |>
     legend.text = element_text(face = "bold", size = 10),
     legend.title = element_blank(),
     legend.background = element_rect(fill = "#fffaf0"),
-    legend.position = "bottom",
+    legend.position = "top",
     plot.margin = margin(.5, .5, 0, .5, "cm")
   )
 
