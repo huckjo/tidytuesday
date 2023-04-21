@@ -1,0 +1,30 @@
+zone,city,state,tz,utc
+America/Adak,Adak,AK,Hawaii-Aleutian,-10
+America/Anchorage,Anchorage,AK,Alaska,-9
+America/Boise,Boise,ID,Mountain,-7
+America/Chicago,Chicago,IL,Central,-6
+America/Denver,Denver,CO,Mountain,-7
+America/Detroit,Detroit,MI,Eastern,-5
+America/Indiana/Indianapolis,Indianapolis,IN,Eastern,-5
+America/Indiana/Knox,Knox,IN,Central,-6
+America/Indiana/Marengo,Marengo,IN,Eastern,-5
+America/Indiana/Petersburg,Petersburg,IN,Eastern,-5
+America/Indiana/Tell_City,Tell City,IN,Central,-6
+America/Indiana/Vevay,Vevay,IN,Eastern,-5
+America/Indiana/Vincennes,Vincennes,IN,Eastern,-5
+America/Indiana/Winamac,Winamac,IN,Eastern,-5
+America/Juneau,Juneau,AK,Alaska,-9
+America/Kentucky/Louisville,Louisvillle,KY,Central,-6
+America/Kentucky/Monticello,Monticello,KY,Central,-6
+America/Los_Angeles,Los Angeles,CA,Pacific,-8
+America/Menominee,Menominee,MI,Central,-6
+America/Metlakatla,Metlakatla,AK,Alaska,-9
+America/New_York,New York,NY,Eastern,-5
+America/Nome,Nome,AK,Alaska,-9
+America/North_Dakota/Beulah,Beulah,ND,Central,-6
+America/North_Dakota/Center,Center,ND,Central,-6
+America/North_Dakota/New_Salem,New Salem,ND,Central,-6
+America/Phoenix,Phoenix,AZ,Mountain,-7
+America/Sitka,Sitka,AK,Alaska,-9
+America/Yakutat,Yakutat,AK,Alaska,-9
+Pacific/Honolulu,Honolulu,HI,Hawaii-Aleutian,-10
