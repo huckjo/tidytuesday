@@ -41,11 +41,40 @@ df <- winners |>
 # Graph
 df |> 
   ggplot(aes(x = Year, y = Time)) +
-  geom_line(aes(color = Category), size = 1.25) +
   geom_vline(aes(xintercept = Record), color = "#FFFFFF") +
-  geom_text(aes(label = Flag), family = "Apple Color Emoji") +
+  geom_line(aes(color = Category), linewidth = 1.25) +
+  geom_point(aes(x = Record), size = 4, shape = 18, color = "gold") +
   facet_wrap(~ Category, nrow = 2, ncol = 1, scales = "free") + 
   scale_color_manual(values = c("#E51664", "#E51664")) +
+  labs(x = "", y = "",
+       title = "Marathon World Records in London",
+       subtitle = paste0(
+         "World records for marathon running have been broken 7 times",
+         "\nat the London Marathon; once for men and six times for women"),
+       caption = "Source: London Marathon | github.com/huckjo") +
+  theme_classic() +
+  theme(
+    plot.title = element_text(face = "bold", size = 18, color = "#FFFFFF"),
+    plot.subtitle = element_text(size = 12, color = "#FFFFFF"),
+    plot.caption = element_text(size = 8, color = "#FFFFFF"),
+    plot.title.position = "plot",
+    plot.background = element_rect(fill = "#0F36FF", color = "#0F36FF"),
+    panel.background = element_rect(fill = "#0F36FF"),
+    panel.border = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text.y = element_text(size = 10, color = "#FFFFFF"),
+    axis.text.x = element_text(size = 10, color = "#FFFFFF"),
+    legend.position = "none",
+    plot.margin = margin(.5, .5, .5, .5, "cm")
+  )
+
+df |> 
+  ggplot(aes(x = Year, y = Time, group = Category)) +
+  geom_vline(aes(xintercept = Record), color = "#FFFFFF") +
+  geom_line(aes(color = Category), size = 1.25) +
+  geom_text(aes(label = Flag), family="EmojiOne") +
+  scale_color_manual(values = c("#E51664", "#000000")) +
   labs(x = "", y = "",
        title = "Marathon World Records in London",
        subtitle = paste0(
@@ -54,13 +83,17 @@ df |>
        caption = "Source: London Marathon | github.com/huckjo") +
   theme_classic() +
   theme(
-    plot.title = element_text(face = "bold", size = 18, color = "#FFFFFF"),
-    plot.subtitle = element_text(size = 12, color = "#FFFFFF"),
+    plot.title = element_text(face = "bold", size = 20, color = "#FFFFFF"),
+    plot.subtitle = element_text(size = 14, color = "#FFFFFF"),
+    plot.caption = element_text(size = 8, color = "#FFFFFF"),
     plot.title.position = "plot",
     plot.background = element_rect(fill = "#0F36FF", color = "#0F36FF"),
     panel.background = element_rect(fill = "#0F36FF"),
-    axis.text.y = element_text(size = 8, color = "#FFFFFF"),
-    axis.text.x = element_text(size = 8, color = "#FFFFFF"),
+    panel.border = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text.y = element_text(size = 10, color = "#FFFFFF"),
+    axis.text.x = element_text(size = 10, color = "#FFFFFF"),
     legend.position = "none",
     plot.margin = margin(.5, .5, .5, .5, "cm")
   )
