@@ -59,11 +59,11 @@ comparison_df |>
       axis.text.x = element_text(size = 10, color = "#000000"),
       axis.text.y = element_text(size = 10, color = "#000000"),
       axis.ticks.y = element_blank(),
-      legend.position = "bottom",
-      legend.text = element_text(size = 10, color = "#000000"),
-      legend.title = element_text(face="bold", size = 10, color = "#000000"),
-      legend.background = element_rect(fill = "#E6E6FA", color = NA),
-      legend.margin = margin(t = 0, r = 0, b = 0, l = 0, unit = "pt"),
+      legend.position = "none", #"bottom",
+      #legend.text = element_text(size = 10, color = "#000000"),
+      #legend.title = element_text(face="bold", size = 10, color = "#000000"),
+      #legend.background = element_rect(fill = "#E6E6FA", color = NA),
+      #legend.margin = margin(t = 0, r = -50, b = 0, l = 0, unit = "pt"),
       plot.margin = margin(.5, .5,.5, .5, "cm")
-      ) + 
-      guides(fill = guide_legend(nrow = 3, ncol = 3))
+      ) 
+      #guides(fill = guide_legend(nrow = 3, ncol = 3))
